@@ -63,20 +63,27 @@
           document.getElementById("user-query").innerText =
             "Please provide a query in the URL parameter 'body'";
         }
-        const {
-          b64_s, // System prompt
-          b64_q, // User query
-          h = "https://api.openai.com/v1/chat/completions", // API Host
-          m = "gpt-4", // Model
-          b64_k, // API Key
-        } = JSON.parse(atob(body.trim()).replaceAll(/\r\n/g, "").trim());
+        const systemPromptEle = document.getElementById("system-prompt");
+        const userQueryEle = document.getElementById("user-query");
+        const bodyData = JSON.parse(
+          atob(body.trim()).replaceAll(/\r\n/g, "").trim()
+        );
+
+        const systemPrompt = bodyData.b64_s ? atob(bodyData.b64_s).trim() : "";
+        const query = bodyData.b64_q ? atob(bodyData.b64_q).trim() : "";
+        const apiHost = bodyData.h ? bodyData.h.trim() : "";
+        const model = bodyData.m ? bodyData.m.trim() : "";
+        const apiKey = bodyData.b64_k ? atob(bodyData.b64_k).trim() : "";
+
+        systemPromptEle.innerText = systemPrompt;
+        userQueryEle.innerText = query;
 
         streamResults({
-          systemPrompt: b64_s ? atob(b64_s).trim() : "",
-          query: b64_q ? atob(b64_q).trim() : "",
-          apiHost: h.trim(),
-          model: m.trim(),
-          apiKey: b64_k ? atob(b64_k).trim() : "",
+          systemPrompt,
+          query,
+          apiHost,
+          model,
+          apiKey,
           respDiv: document.getElementById("markdown-response"),
         });
       })();
