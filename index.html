@@ -68,15 +68,15 @@
         k, // API Key
       } = JSON.parse(atob(body));
     </script>
-    <script src="./html-gpt.20240405.1.js"></script>
+    <script src="./index.js"></script>
     <script>
       (async () => {
         streamResults({
-          systemPrompt: s.trim(),
-          query: q.trim(),
-          apiHost: h.trim(),
-          model: m.trim(),
-          apiKey: k.trim(),
+          systemPrompt: atob(s).trim(),
+          query: atob(q).trim(),
+          apiHost: atob(h).trim(),
+          model: atob(m).trim(),
+          apiKey: atob(k).trim(),
           respDiv: document.getElementById("markdown-response"),
         });
       })();
