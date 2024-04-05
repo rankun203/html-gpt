@@ -54,6 +54,7 @@
 
     <div id="markdown-response"></div>
     <script>
+      const decode = (i) => atob(i.replace(/\n/, '')).trim()
       // parse query from url parameter query
       const body = new URLSearchParams(window.location.search).get("body");
       if (!body) {
@@ -66,17 +67,17 @@
         h = "https://api.openai.com/v1/chat/completions", // API Host
         m = "gpt-4", // Model
         k, // API Key
-      } = JSON.parse(atob(body));
+      } = JSON.parse(decode(body));
     </script>
     <script src="./index.js"></script>
     <script>
       (async () => {
         streamResults({
-          systemPrompt: atob(s).trim(),
-          query: atob(q).trim(),
-          apiHost: atob(h).trim(),
-          model: atob(m).trim(),
-          apiKey: atob(k).trim(),
+          systemPrompt: decode(s),
+          query: decode(q),
+          apiHost: decode(h),
+          model: decode(m),
+          apiKey: decode(k),
           respDiv: document.getElementById("markdown-response"),
         });
       })();
