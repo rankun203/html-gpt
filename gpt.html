@@ -60,7 +60,7 @@
         const body = new URLSearchParams(window.location.search).get("body");
         if (!body) {
           document.getElementById("user-query").innerText =
-            "Please provide a query in the URL parameter 'body'";
+            "Please provide a query in the URL parameter 'body' " + window.location.search;
         }
         const systemPromptEle = document.getElementById("system-prompt");
         const userQueryEle = document.getElementById("user-query");
