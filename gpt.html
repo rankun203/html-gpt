@@ -14,17 +14,17 @@
         margin: 0;
       }
 
-      blockquote p {
+      blockquote pre {
         padding: 15px;
         background: #eee;
         border-radius: 5px;
       }
 
-      blockquote p::before {
+      blockquote pre::before {
         content: "\201C";
       }
 
-      blockquote p::after {
+      blockquote pre::after {
         content: "\201D";
       }
 
@@ -39,7 +39,7 @@
           color: #fff;
         }
 
-        blockquote p {
+        blockquote pre {
           background: #333; /* Dark background for blockquote */
         }
       }
@@ -60,7 +60,8 @@
         const body = new URLSearchParams(window.location.search).get("body");
         if (!body) {
           document.getElementById("user-query").innerText =
-            "Please provide a query in the URL parameter 'body' " + window.location.search;
+            "Please provide a query in the URL parameter 'body' " +
+            window.location.search;
         }
         const systemPromptEle = document.getElementById("system-prompt");
         const userQueryEle = document.getElementById("user-query");
