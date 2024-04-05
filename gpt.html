@@ -69,7 +69,7 @@
           h = "https://api.openai.com/v1/chat/completions", // API Host
           m = "gpt-4", // Model
           k, // API Key
-        } = JSON.parse(atob(body.trim().replace(/\n/g, "")).trim());
+        } = JSON.parse(atob(body.trim()).replace(/\n/g, "").trim());
 
         streamResults({
           systemPrompt: atob(s).trim(),
