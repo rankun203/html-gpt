@@ -72,11 +72,11 @@
         } = JSON.parse(atob(body.trim()).replaceAll(/\r\n/g, "").trim());
 
         streamResults({
-          systemPrompt: atob(b64_s).trim(),
-          query: atob(b64_q).trim(),
+          systemPrompt: b64_s ? atob(b64_s).trim() : "",
+          query: b64_q ? atob(b64_q).trim() : "",
           apiHost: h.trim(),
           model: m.trim(),
-          apiKey: atob(b64_k).trim(),
+          apiKey: b64_k ? atob(b64_k).trim() : "",
           respDiv: document.getElementById("markdown-response"),
         });
       })();
