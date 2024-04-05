@@ -69,4 +69,5 @@ const streamResults = async ({
       respDiv.innerText = responseText;
     }
   }
+  console.log("[streamResults] final response:\n" + responseText);
 };
