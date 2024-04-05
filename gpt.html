@@ -53,25 +53,25 @@
     </blockquote>
 
     <div id="markdown-response"></div>
-    <script>
-      const decode = (i) => atob(i.replace(/\n/, '')).trim()
-      // parse query from url parameter query
-      const body = new URLSearchParams(window.location.search).get("body");
-      if (!body) {
-        document.getElementById("user-query").innerText =
-          "Please provide a query in the URL parameter 'body'";
-      }
-      const {
-        s, // System prompt
-        q, // User query
-        h = "https://api.openai.com/v1/chat/completions", // API Host
-        m = "gpt-4", // Model
-        k, // API Key
-      } = JSON.parse(decode(body));
-    </script>
+    <script></script>
     <script src="./index.js"></script>
     <script>
       (async () => {
+        const decode = (i) => atob(i.replace(/\n/, "")).trim();
+        // parse query from url parameter query
+        const body = new URLSearchParams(window.location.search).get("body");
+        if (!body) {
+          document.getElementById("user-query").innerText =
+            "Please provide a query in the URL parameter 'body'";
+        }
+        const {
+          s, // System prompt
+          q, // User query
+          h = "https://api.openai.com/v1/chat/completions", // API Host
+          m = "gpt-4", // Model
+          k, // API Key
+        } = JSON.parse(decode(body));
+
         streamResults({
           systemPrompt: decode(s),
           query: decode(q),
