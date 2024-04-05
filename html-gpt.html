@@ -57,7 +57,7 @@
       // parse query from url parameter query
       const body = new URLSearchParams(window.location.search).get("body");
       if (!body) {
-        document.getElementById("system-prompt").innerText =
+        document.getElementById("user-query").innerText =
           "Please provide a query in the URL parameter 'body'";
       }
       const {
@@ -72,11 +72,11 @@
     <script>
       (async () => {
         streamResults({
-          systemPrompt: s,
-          query: q,
-          apiHost: h,
-          model: m,
-          apiKey: k,
+          systemPrompt: s.trim(),
+          query: q.trim(),
+          apiHost: h.trim(),
+          model: m.trim(),
+          apiKey: k.trim(),
           respDiv: document.getElementById("markdown-response"),
         });
       })();
