@@ -26,7 +26,7 @@ html-gpt/gpt.html
 In summary:
 
 1. `bin.sps.mindfine.com` only keeps the encrypted queries for 1min, doesn't have access to your API Key.
-2. `html-gpt.rankun.net` (GitHub Pages) will have the base64 encoded API Key in the URL.
+2. `html-gpt.rankun.net` (GitHub Pages, this repo) will have the base64 encoded API Key in the URL.
 
 ## How to update
 
