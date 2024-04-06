@@ -6,6 +6,8 @@ Using OpenAI GPT models in shortcuts to integrate with Apple ecosystem. Check my
 
 ## Where is My OpenAI API Key Used?
 
+In essence, **NO ONE**, including myself, has any means to access your API key. The sole means of misappropriating your API Key is through the openai_api_key.txt stored in **your iCloud**, or by **hacking GitHub Pages**.
+
 If you are using Shortcuts described https://blog.rankun.net/2024/03/17/explain_ask_proofread/
 
 1. It's saved in plain text under iCloud/Shortcuts/ask/openai_api_key.txt
@@ -27,8 +29,6 @@ In summary:
 
 1. `bin.sps.mindfine.com` only keeps the encrypted queries for 1min, doesn't have access to your API Key.
 2. `html-gpt.rankun.net` (GitHub Pages, this repo) will have the base64 encoded API Key in the URL.
-
-In another words, I personally have **ABSOLUTELY NO** way to get your API key, the only way people can steal your API Key is through openai_api_key.txt saved in your iCloud, or hack Github Pages.
 
 ## How to update
 
