@@ -70,7 +70,7 @@
       (async () => {
         // parse query from url parameter query
         const params = new URLSearchParams(window.location.search);
-        const apiKey = params.get("api_key");
+        const apiKey64 = params.get("api_key");
         const data_url = params.get("data_url");
         if (!data_url) {
           document.getElementById("user-query").innerText =
@@ -83,13 +83,14 @@
         // get data from data_url
         const response = await fetch(data_url);
         const body = await response.text();
-        const decrypted = decrypt(atob(body.trim()), apiKey);
+        const decrypted = decrypt(atob(body.trim()), apiKey64);
         const bodyData = JSON.parse(decrypted.trim());
 
         const systemPrompt = bodyData.b64_s ? atob(bodyData.b64_s).trim() : "";
         const query = bodyData.b64_q ? atob(bodyData.b64_q).trim() : "";
         const apiHost = bodyData.h ? bodyData.h.trim() : "";
         const model = bodyData.m ? bodyData.m.trim() : "";
+        const apiKey = atob(apiKey64);
 
         systemPromptEle.innerText = systemPrompt;
         userQueryEle.innerText = query;
