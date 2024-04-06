@@ -1,7 +1,27 @@
 # HTML GPT
 
+## Why
+
+Using OpenAI GPT models in shortcuts to integrate with Apple ecosystem. Check my blog post for more information https://blog.rankun.net/2024/03/17/explain_ask_proofread/.
+
+## Where is My OpenAI API Key Used?
+
+1. If you are using Shortcuts described https://blog.rankun.net/2024/03/17/explain_ask_proofread/
+  1. It's saved in plain text under iCloud/Shortcuts/ask/openai_api_key.txt
+  2. Used to encrypt your queries
+  3. Used as a query parameter (base64 encoded) and opened like this:
+    1. `https://html-gpt.rankun.net/gpt_enc.html?api_key=weoi...&data_url=https://bin.sps.mindfine.com/...`
+2. html-gpt
+  1. The GitHub Pages server will have the base64 encoded api_key
+  2. Used to decrypt the queries
+  3. Used to query OpenAI GPT API in your browser
+
+In summary:
+
+1. `bin.sps.mindfine.com` only keeps the encrypted queries for 1min, doesn't have access to your API Key.
+2. `html-gpt.rankun.net` (GitHub Pages) will have the base64 encoded API Key.
+
 ## How to update
 
-1. Edit html-gpt.js and index.html
-2. For html-gpt.js, copy it to dist/, rename it to add DATE in the middle, upload to somewhere on the cloud
-3. For index.html, copy and paste into Shortcuts
+1. Edit index.js and gpt.html
+2. Push
