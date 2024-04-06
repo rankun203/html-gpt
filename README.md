@@ -28,7 +28,7 @@ In summary:
 1. `bin.sps.mindfine.com` only keeps the encrypted queries for 1min, doesn't have access to your API Key.
 2. `html-gpt.rankun.net` (GitHub Pages, this repo) will have the base64 encoded API Key in the URL.
 
-In another words, I personally have ABSOLUTELY NO way to get your API key, the only way people can steal your API Key is through openai_api_key.txt saved in your iCloud, or hack Github Pages.
+In another words, I personally have **ABSOLUTELY NO** way to get your API key, the only way people can steal your API Key is through openai_api_key.txt saved in your iCloud, or hack Github Pages.
 
 ## How to update
 
