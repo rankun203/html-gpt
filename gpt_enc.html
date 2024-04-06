@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: system-ui;
+        color: #333; /* Default text color for light mode */
+        background-color: #fff; /* Default background color for light mode */
+      }
+
+      blockquote {
+        margin: 0;
+      }
+
+      blockquote pre {
+        padding: 15px;
+        background: #eee;
+        border-radius: 5px;
+        white-space: pre-wrap;
+      }
+
+      blockquote pre::before {
+        content: "\201C";
+      }
+
+      blockquote pre::after {
+        content: "\201D";
+      }
+
+      /* Dark mode styles */
+      @media (prefers-color-scheme: dark) {
+        body {
+          color: #ddd; /* Text color for dark mode */
+          background-color: #121212; /* Background color for dark mode */
+        }
+
+        strong {
+          color: #fff;
+        }
+
+        blockquote pre {
+          background: #333; /* Dark background for blockquote */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="system-prompt" style="display: none"></div>
+
+    <blockquote>
+      <pre id="user-query"></pre>
+    </blockquote>
+
+    <div id="markdown-response"></div>
+    <script src="./index.js"></script>
+    <script src="./crypto.js"></script>
+    <script>
+      function encrypt(text, passphrase) {
+        return CryptoJS.AES.encrypt(text, passphrase).toString();
+      }
+
+      function decrypt(ciphertext, passphrase) {
+        const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
+        return bytes.toString(CryptoJS.enc.Utf8);
+      }
+    </script>
+    <script>
+      (async () => {
+        // parse query from url parameter query
+        const params = new URLSearchParams(window.location.search);
+        const apiKey = params.get("api_key");
+        const data_url = params.get("data_url");
+        if (!data_url) {
+          document.getElementById("user-query").innerText =
+            "Please provide api_key and data_url in the URL parameter." +
+            window.location.search;
+        }
+        const systemPromptEle = document.getElementById("system-prompt");
+        const userQueryEle = document.getElementById("user-query");
+
+        // get data from data_url
+        const response = await fetch(data_url);
+        const body = await response.text();
+        const decrypted = decrypt(atob(body.trim()), apiKey);
+        const bodyData = JSON.parse(decrypted.trim());
+
+        const systemPrompt = bodyData.b64_s ? atob(bodyData.b64_s).trim() : "";
+        const query = bodyData.b64_q ? atob(bodyData.b64_q).trim() : "";
+        const apiHost = bodyData.h ? bodyData.h.trim() : "";
+        const model = bodyData.m ? bodyData.m.trim() : "";
+
+        systemPromptEle.innerText = systemPrompt;
+        userQueryEle.innerText = query;
+
+        streamResults({
+          systemPrompt,
+          query,
+          apiHost,
+          model,
+          apiKey,
+          respDiv: document.getElementById("markdown-response"),
+        });
+      })();
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"
+      async
+    ></script>
+  </body>
+</html>

@@ -1,4 +1,3 @@
-const respDiv = document.getElementById("markdown-response");
 let cachedMd = null;
 
 const streamResults = async ({
