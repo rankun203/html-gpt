@@ -4,7 +4,7 @@
 
 Using OpenAI GPT models in shortcuts to integrate with Apple ecosystem. Check my blog post for more information https://blog.rankun.net/2024/03/17/explain_ask_proofread/.
 
-## Where is My OpenAI API Key Used?
+## Is My API Key Safe?
 
 In essence, **NO ONE**, including myself, has any means to access your API key. The sole means of misappropriating your API Key is through the openai_api_key.txt stored in **your iCloud**, or by **hacking GitHub Pages**.
 
