@@ -1,12 +1,9 @@
-let cachedMd = null;
-
 const streamResults = async ({
-  systemPrompt,
-  query,
+  messages,
   apiHost = "https://api.openai.com/v1/chat/completions",
   model = "gpt-3.5-turbo",
   apiKey,
-  respDiv,
+  messageEle,
 }) => {
   const response = await fetch(apiHost, {
     method: "POST",
@@ -16,7 +13,8 @@ const streamResults = async ({
     },
     body: JSON.stringify({
       model,
-      messages: [
+      messages,
+      /* [
         {
           role: "system",
           content: systemPrompt,
@@ -25,7 +23,7 @@ const streamResults = async ({
           role: "user",
           content: query,
         },
-      ],
+      ]*/
       stream: true,
     }),
   });
@@ -48,25 +46,21 @@ const streamResults = async ({
           console.log("[streamResults] Ignoring line:", line);
           return;
         }
-        const json = JSON.parse(line);
-        console.log("[streamResults] Chunk:", json);
-        if ("content" in json.choices[0].delta) {
-          responseText += json.choices[0].delta.content;
+        try {
+          const json = JSON.parse(line);
+          console.log("[streamResults] Chunk:", json);
+          if ("content" in json.choices[0].delta) {
+            responseText += json.choices[0].delta.content;
+          }
+        } catch (e) {
+          console.error("[streamResults] Error parsing JSON: " + e + line);
         }
       }
     });
-    if (!cachedMd) {
-      if ("markdownit" in window) {
-        cachedMd = window.markdownit();
-      }
-    }
 
-    if (cachedMd) {
-      const result = cachedMd.render(responseText);
-      respDiv.innerHTML = result;
-    } else {
-      respDiv.innerText = responseText;
-    }
+    messageEle.innerHTML = renderMarkdown(responseText);
   }
   console.log("[streamResults] final response:\n" + responseText);
+
+  return responseText;
 };

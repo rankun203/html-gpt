@@ -8,6 +8,8 @@
         font-family: system-ui;
         color: #333; /* Default text color for light mode */
         background-color: #fff; /* Default background color for light mode */
+        margin: 0;
+        padding: 0;
       }
 
       .container {
@@ -36,6 +38,43 @@
         content: "\201D";
       }
 
+      #markdown-response {
+        padding-bottom: 60px;
+      }
+
+      .message-box {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .message-box form {
+        display: flex;
+        margin: 4px auto;
+        max-width: 800px;
+      }
+
+      #message-input {
+        flex: 1;
+        resize: none;
+        margin-right: 4px;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+      }
+
+      .message-box form button.send {
+        padding: 1px 12px;
+        cursor: pointer;
+      }
+
+      .message-item.user {
+        text-align: right;
+        background-color: #eee;
+        padding: 1px 15px;
+        border-radius: 5px;
+      }
+
       /* Dark mode styles */
       @media (prefers-color-scheme: dark) {
         body {
@@ -48,7 +87,11 @@
         }
 
         blockquote pre {
-          background: #333; /* Dark background for blockquote */
+          background-color: #333; /* Dark background for blockquote */
+        }
+
+        .message-item.user {
+          background-color: #333;
         }
       }
     </style>
@@ -63,9 +106,16 @@
 
       <div id="markdown-response"></div>
     </div>
+    <div class="message-box">
+      <form id="message-form">
+        <textarea id="message-input" name="message" rows="1"></textarea>
+        <button class="send" type="submit">Send</button>
+      </form>
+    </div>
     <script src="./index.js"></script>
     <script src="./crypto.js"></script>
     <script>
+      /** util: decode base64 in utf-8 */
       function atob_utf8(value) {
         const value_latin1 = atob(value);
         return new TextDecoder("utf-8").decode(
@@ -74,18 +124,51 @@
           )
         );
       }
-    </script>
-    <script>
+
+      /** util: encrypt string with password using AES */
       function encrypt(text, passphrase) {
         return CryptoJS.AES.encrypt(text, passphrase).toString();
       }
 
+      /** util: decrypt string with password using AES */
       function decrypt(ciphertext, passphrase) {
         const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
         return bytes.toString(CryptoJS.enc.Utf8);
       }
     </script>
     <script>
+      let cachedMd = null;
+      function renderMarkdown(message) {
+        if (!cachedMd && "markdownit" in window) {
+          cachedMd = window.markdownit();
+        }
+
+        if (!message) return message;
+
+        if (cachedMd) {
+          return cachedMd.render(message);
+        } else {
+          return message;
+        }
+      }
+
+      const msgContainerEle = document.getElementById("markdown-response");
+      /** create message element and return the element */
+      function createMessageEle(message, role) {
+        const messageEle = document.createElement("div");
+        messageEle.classList.add("message-item");
+        if (role) messageEle.classList.add(role);
+        messageEle.innerHTML = renderMarkdown(message);
+        msgContainerEle.appendChild(messageEle);
+        return messageEle;
+      }
+    </script>
+    <script>
+      const messages = [];
+      let apiHost = "";
+      let model = "";
+      let apiKey = "";
+      // for initial messages
       (async () => {
         // parse query from url parameter query
         const params = new URLSearchParams(window.location.search);
@@ -109,22 +192,63 @@
           ? atob_utf8(bodyData.b64_s).trim()
           : "";
         const query = bodyData.b64_q ? atob_utf8(bodyData.b64_q).trim() : "";
-        const apiHost = bodyData.h ? bodyData.h.trim() : "";
-        const model = bodyData.m ? bodyData.m.trim() : "";
-        const apiKey = atob_utf8(apiKey64);
+        apiHost = bodyData.h ? bodyData.h.trim() : "";
+        model = bodyData.m ? bodyData.m.trim() : "";
+        apiKey = atob_utf8(apiKey64);
 
         systemPromptEle.innerText = systemPrompt;
         userQueryEle.innerText = query;
 
-        streamResults({
-          systemPrompt,
-          query,
+        messages.push({ role: "system", content: systemPrompt });
+        messages.push({ role: "user", content: query });
+        const messageEle = createMessageEle("", "system");
+
+        const content = await streamResults({
+          messages,
           apiHost,
           model,
           apiKey,
-          respDiv: document.getElementById("markdown-response"),
+          messageEle,
         });
+        messages.push({ role: "system", content });
       })();
+    </script>
+    <script>
+      const msgEle = document.getElementById("message-input");
+      // for new messages
+      const messageForm = document.getElementById("message-form");
+      /** submitting the message */
+      async function sendMsg(event) {
+        event.preventDefault();
+        if (!apiHost) alert("API Host not found");
+        if (!apiKey) alert("API Key not found");
+        if (!model) alert("model name not found");
+
+        const newMsg = msgEle.value;
+        if (!newMsg) return;
+        msgEle.value = "";
+
+        // put the message on screen
+        messages.push({ role: "user", content: newMsg });
+        createMessageEle(newMsg, "user");
+
+        const replyEle = createMessageEle("", "system");
+        const content = await streamResults({
+          messages,
+          apiHost,
+          model,
+          apiKey,
+          messageEle: replyEle,
+        });
+        messages.push({ role: "system", content });
+      }
+
+      messageForm.addEventListener("submit", sendMsg);
+      msgEle.addEventListener("keydown", function (e) {
+        if (e.keyCode == 13 && (e.metaKey || e.ctrlKey)) {
+          sendMsg(e);
+        }
+      });
     </script>
     <script
       src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"
