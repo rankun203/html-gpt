@@ -10,6 +10,12 @@
         background-color: #fff; /* Default background color for light mode */
       }
 
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 12px;
+      }
+
       blockquote {
         margin: 0;
       }
@@ -50,11 +56,13 @@
   <body>
     <div id="system-prompt" style="display: none"></div>
 
-    <blockquote>
-      <pre id="user-query"></pre>
-    </blockquote>
+    <div class="container">
+      <blockquote>
+        <pre id="user-query"></pre>
+      </blockquote>
 
-    <div id="markdown-response"></div>
+      <div id="markdown-response"></div>
+    </div>
     <script src="./index.js"></script>
     <script src="./crypto.js"></script>
     <script>
