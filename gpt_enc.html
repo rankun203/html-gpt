@@ -232,7 +232,7 @@
 
         messages.push({ role: "system", content: systemPrompt });
         messages.push({ role: "user", content: query });
-        const messageEle = createMessageEle("", "system");
+        const messageEle = createMessageEle("", "assistant");
 
         const content = await streamResults({
           messages,
@@ -241,7 +241,7 @@
           apiKey,
           messageEle,
         });
-        messages.push({ role: "system", content });
+        messages.push({ role: "assistant", content });
       })();
     </script>
     <script>
@@ -264,7 +264,7 @@
         createMessageEle(newMsg, "user");
         scrollToBottom();
 
-        const replyEle = createMessageEle("", "system");
+        const replyEle = createMessageEle("", "assistant");
         const content = await streamResults({
           messages,
           apiHost,
@@ -272,7 +272,7 @@
           apiKey,
           messageEle: replyEle,
         });
-        messages.push({ role: "system", content });
+        messages.push({ role: "assistant", content });
       }
 
       messageForm.addEventListener("submit", sendMsg);
