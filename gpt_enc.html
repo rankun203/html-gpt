@@ -48,10 +48,15 @@
         width: 100%;
       }
 
-      .message-box form {
+      #message-form {
         display: flex;
         margin: 4px auto;
         max-width: 800px;
+      }
+
+      #message-form textarea:hover,
+      #message-form button:hover {
+        opacity: 0.9;
       }
 
       #message-input {
@@ -64,7 +69,9 @@
       }
 
       .message-box form button.send {
+        border: none;
         padding: 1px 12px;
+        border-radius: 5px;
         cursor: pointer;
       }
 
@@ -92,6 +99,15 @@
 
         .message-item.user {
           background-color: #333;
+        }
+
+        #message-input {
+          background-color: #333;
+          color: #ddd;
+        }
+        .message-box form button.send {
+          background-color: #333;
+          color: #ddd;
         }
       }
     </style>
