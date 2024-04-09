@@ -115,6 +115,12 @@
           color: #ddd;
         }
       }
+
+      @media print {
+        .no-print {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -127,7 +133,7 @@
 
       <div id="markdown-response"></div>
     </div>
-    <div class="message-box">
+    <div class="message-box no-print">
       <form id="message-form">
         <textarea id="message-input" name="message" rows="1"></textarea>
         <button class="send" type="submit">Send</button>
