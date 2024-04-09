@@ -39,7 +39,7 @@
       }
 
       #markdown-response {
-        padding-bottom: 60px;
+        padding-bottom: 120px;
       }
 
       .message-box {
@@ -182,6 +182,10 @@
         msgContainerEle.appendChild(messageEle);
         return messageEle;
       }
+
+      function scrollToBottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+      }
     </script>
     <script>
       const messages = [];
@@ -251,6 +255,7 @@
         // put the message on screen
         messages.push({ role: "user", content: newMsg });
         createMessageEle(newMsg, "user");
+        scrollToBottom();
 
         const replyEle = createMessageEle("", "system");
         const content = await streamResults({
