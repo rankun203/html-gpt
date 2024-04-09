@@ -277,8 +277,12 @@
 
       messageForm.addEventListener("submit", sendMsg);
       msgEle.addEventListener("keydown", function (e) {
-        if (e.keyCode == 13 && (e.metaKey || e.ctrlKey)) {
-          sendMsg(e);
+        if (e.keyCode == 13) {
+          if (e.shiftKey) {
+            return;
+          } else {
+            sendMsg(e);
+          }
         }
       });
     </script>
