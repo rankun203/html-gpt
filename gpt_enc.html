@@ -58,6 +58,16 @@
     <script src="./index.js"></script>
     <script src="./crypto.js"></script>
     <script>
+      function atob_utf8(value) {
+        const value_latin1 = atob(value);
+        return new TextDecoder("utf-8").decode(
+          Uint8Array.from({ length: value_latin1.length }, (element, index) =>
+            value_latin1.charCodeAt(index)
+          )
+        );
+      }
+    </script>
+    <script>
       function encrypt(text, passphrase) {
         return CryptoJS.AES.encrypt(text, passphrase).toString();
       }
@@ -85,13 +95,15 @@
         const response = await fetch(data_url);
         const encrypted = await response.text();
         const decrypted = decrypt(encrypted.trim(), apiKey64);
-        const bodyData = JSON.parse(atob(decrypted));
+        const bodyData = JSON.parse(atob_utf8(decrypted));
 
-        const systemPrompt = bodyData.b64_s ? atob(bodyData.b64_s).trim() : "";
-        const query = bodyData.b64_q ? atob(bodyData.b64_q).trim() : "";
+        const systemPrompt = bodyData.b64_s
+          ? atob_utf8(bodyData.b64_s).trim()
+          : "";
+        const query = bodyData.b64_q ? atob_utf8(bodyData.b64_q).trim() : "";
         const apiHost = bodyData.h ? bodyData.h.trim() : "";
         const model = bodyData.m ? bodyData.m.trim() : "";
-        const apiKey = atob(apiKey64);
+        const apiKey = atob_utf8(apiKey64);
 
         systemPromptEle.innerText = systemPrompt;
         userQueryEle.innerText = query;

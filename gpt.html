@@ -57,6 +57,16 @@
     <div id="markdown-response"></div>
     <script src="./index.js"></script>
     <script>
+      function atob_utf8(value) {
+        const value_latin1 = atob(value);
+        return new TextDecoder("utf-8").decode(
+          Uint8Array.from({ length: value_latin1.length }, (element, index) =>
+            value_latin1.charCodeAt(index)
+          )
+        );
+      }
+    </script>
+    <script>
       (async () => {
         // parse query from url parameter query
         const body = new URLSearchParams(window.location.search).get("body");
@@ -68,14 +78,16 @@
         const systemPromptEle = document.getElementById("system-prompt");
         const userQueryEle = document.getElementById("user-query");
         const bodyData = JSON.parse(
-          atob(body.trim()).replaceAll(/\r\n/g, "").trim()
+          atob_utf8(body.trim()).replaceAll(/\r\n/g, "").trim()
         );
 
-        const systemPrompt = bodyData.b64_s ? atob(bodyData.b64_s).trim() : "";
-        const query = bodyData.b64_q ? atob(bodyData.b64_q).trim() : "";
+        const systemPrompt = bodyData.b64_s
+          ? atob_utf8(bodyData.b64_s).trim()
+          : "";
+        const query = bodyData.b64_q ? atob_utf8(bodyData.b64_q).trim() : "";
         const apiHost = bodyData.h ? bodyData.h.trim() : "";
         const model = bodyData.m ? bodyData.m.trim() : "";
-        const apiKey = bodyData.b64_k ? atob(bodyData.b64_k).trim() : "";
+        const apiKey = bodyData.b64_k ? atob_utf8(bodyData.b64_k).trim() : "";
 
         systemPromptEle.innerText = systemPrompt;
         userQueryEle.innerText = query;
