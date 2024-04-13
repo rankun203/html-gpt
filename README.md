@@ -36,3 +36,7 @@ In summary:
 
 1. Edit index.js and gpt.html
 2. Push
+
+## Printing service
+
+If you open the page as a webview, you may not be able to print inside the webview. In that case, you can use [this service](https://github.com/rankun203/html-gpt-print) to print the conversation for safekeeping.
