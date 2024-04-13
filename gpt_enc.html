@@ -43,6 +43,11 @@
         padding-bottom: 120px;
       }
 
+      #markdown-response blockquote {
+        border-left: 5px solid #ccc;
+        padding: 0 10px;
+      }
+
       .message-box {
         position: fixed;
         bottom: 0;
@@ -145,7 +150,6 @@
         <button class="send" type="submit">Send</button>
       </form>
     </div>
-    <script src="./index.js"></script>
     <script src="./crypto.js"></script>
     <script>
       /** util: decode base64 in utf-8 */
@@ -170,6 +174,9 @@
       }
     </script>
     <script>
+      /**
+       * Some helper functions, work with Markdown, work with DOM
+       */
       let cachedMd = null;
       function renderMarkdown(message) {
         if (!cachedMd && "markdownit" in window) {
@@ -201,6 +208,68 @@
       }
     </script>
     <script>
+      /**
+       *
+       */
+      const streamResults = async ({
+        messages,
+        apiHost = "https://api.openai.com/v1/chat/completions",
+        model = "gpt-3.5-turbo",
+        apiKey,
+        messageEle,
+      }) => {
+        const response = await fetch(apiHost, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({ model, messages, stream: true }),
+        });
+
+        const reader = response.body?.getReader();
+
+        let responseText = "";
+        while (reader && true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            console.log("[streamResults] Stream complete");
+            break;
+          }
+          // Process each chunk
+          const chunk = new TextDecoder().decode(value);
+          chunk.split("\n").forEach((line) => {
+            if (line) {
+              line = line.replace("data: ", "");
+              if (!line.startsWith("{")) {
+                console.log("[streamResults] Ignoring line:", line);
+                return;
+              }
+              try {
+                const json = JSON.parse(line);
+                console.log("[streamResults] Chunk:", json);
+                if ("content" in json.choices[0].delta) {
+                  responseText += json.choices[0].delta.content;
+                }
+              } catch (e) {
+                console.error(
+                  "[streamResults] Error parsing JSON: " + e + line
+                );
+              }
+            }
+          });
+
+          messageEle.innerHTML = renderMarkdown(responseText);
+        }
+        console.log("[streamResults] final response:\n" + responseText);
+
+        return responseText;
+      };
+    </script>
+    <script>
+      /**
+       * Stream the initial results from API
+       */
       const messages = [];
       let apiHost = "";
       let model = "";
@@ -251,6 +320,9 @@
       })();
     </script>
     <script>
+      /**
+       * Reply feature, send new message and get the response
+       */
       const msgEle = document.getElementById("message-input");
       // for new messages
       const messageForm = document.getElementById("message-form");
