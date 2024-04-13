@@ -62,21 +62,26 @@
         max-width: 800px;
       }
 
+      #message-form textarea,
+      #message-form button {
+        opacity: 0.7;
+      }
+
       #message-form textarea:hover,
       #message-form button:hover {
-        opacity: 0.9;
+        opacity: 1;
       }
 
       #message-input {
         flex: 1;
         resize: none;
-        margin-right: 4px;
         padding: 10px;
         font-size: 14px;
         border-radius: 5px;
       }
 
-      .message-box form button.send {
+      .message-box form button {
+        margin-left: 4px;
         border: none;
         padding: 1px 12px;
         border-radius: 5px;
@@ -121,7 +126,7 @@
           background-color: #333;
           color: #ddd;
         }
-        .message-box form button.send {
+        .message-box form button {
           background-color: #333;
           color: #ddd;
         }
@@ -153,6 +158,7 @@
           placeholder="Type your question and hit Enter"
         ></textarea>
         <button class="send" type="submit">Send</button>
+        <button class="print" onclick="printMessagesToPDF()">Save</button>
       </form>
     </div>
     <script src="./crypto.js"></script>
@@ -368,6 +374,33 @@
           }
         }
       });
+    </script>
+    <script>
+      /**
+       * Print conversation
+       */
+      async function printMessagesToPDF(messagesArray) {
+        const url = "https://html-gpt-print.sps.mindfine.com/print";
+        try {
+          // Send the request to the API
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const pdfBlob = await response.blob();
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+
+          window.location.href = pdfUrl;
+        } catch (error) {
+          console.error("Error fetching PDF:", error);
+        }
+      }
     </script>
     <script
       src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"
