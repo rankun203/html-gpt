@@ -179,6 +179,16 @@
         );
       }
 
+      /** util: encode string to base64 in utf-8 */
+      function btoa_utf8(value) {
+        const utf8EncodedString = new TextEncoder().encode(value); // Encode the string as a UTF-8 encoded Uint8Array
+        let binaryString = "";
+        utf8EncodedString.forEach((byte) => {
+          binaryString += String.fromCharCode(byte); // Convert each byte to its corresponding character
+        });
+        return btoa(binaryString); // Encode the binary string to Base64
+      }
+
       /** util: encrypt string with password using AES */
       function encrypt(text, passphrase) {
         return CryptoJS.AES.encrypt(text, passphrase).toString();
@@ -429,18 +439,20 @@
       /**
        * Print conversation
        */
-      async function printMessagesToPDF(messagesArray) {
+      async function printMessagesToPDF() {
         const printBtn = document.getElementById("print-btn");
         printBtn.disabled = true;
         printBtn.innerText = "Printing...";
 
         const url = "https://html-gpt-print.sps.mindfine.com/print";
         try {
+          const [systemPrompt, query, ...m_list] = messages;
+          const b64_q = btoa_utf8(query);
           // Send the request to the API
           const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ messages }),
+            body: JSON.stringify({ b64_q, m_list }),
           });
 
           if (!response.ok) {
