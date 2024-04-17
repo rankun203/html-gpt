@@ -287,33 +287,16 @@
       let apiHost = "";
       let model = "";
       let apiKey = "";
-      // for initial messages
-      (async () => {
-        // parse query from url parameter query
-        const params = new URLSearchParams(window.location.search);
-        const apiKey64 = params.get("api_key");
-        const data_url = params.get("data_url");
-        if (!data_url) {
-          document.getElementById("user-query").innerText =
-            "Please provide api_key and data_url in the URL parameter." +
-            window.location.search;
-        }
+
+      async function processUserMessage({
+        systemPrompt,
+        query,
+        apiHost,
+        model,
+        apiKey,
+      }) {
         const systemPromptEle = document.getElementById("system-prompt");
         const userQueryEle = document.getElementById("user-query");
-
-        // get data from data_url
-        const response = await fetch(data_url);
-        const encrypted = await response.text();
-        const decrypted = decrypt(encrypted.trim(), apiKey64);
-        const bodyData = JSON.parse(atob_utf8(decrypted));
-
-        const systemPrompt = bodyData.b64_s
-          ? atob_utf8(bodyData.b64_s).trim()
-          : "";
-        const query = bodyData.b64_q ? atob_utf8(bodyData.b64_q).trim() : "";
-        apiHost = bodyData.h ? bodyData.h.trim() : "";
-        model = bodyData.m ? bodyData.m.trim() : "";
-        apiKey = atob_utf8(apiKey64);
 
         systemPromptEle.innerText = systemPrompt;
         userQueryEle.innerText = query;
@@ -330,6 +313,67 @@
           messageEle,
         });
         messages.push({ role: "assistant", content });
+      }
+
+      async function parseUrl() {
+        // parse query from url parameter query
+        const params = new URLSearchParams(window.location.search);
+        const apiKey64 = params.get("api_key");
+        const data_url = params.get("data_url");
+        if (!data_url) {
+          document.getElementById("user-query").innerText =
+            "Please provide api_key and data_url in the URL parameter." +
+            window.location.search;
+          return {};
+        }
+
+        // get data from data_url
+        const response = await fetch(data_url);
+        // encrypted is suppose to be:
+        // 1. JSON object { b64_s, b64_q, h, m, m_list };
+        // 2. base64 encoded;
+        // 3. encrypted with AES
+        const encrypted = await response.text();
+        const decrypted = decrypt(encrypted.trim(), apiKey64);
+        const bodyData = JSON.parse(atob_utf8(decrypted));
+        const { b64_s, b64_q, h, m, m_list } = bodyData;
+
+        const systemPrompt = b64_s ? atob_utf8(b64_s).trim() : "";
+        const query = b64_q ? atob_utf8(b64_q).trim() : "";
+        apiHost = h ? h.trim() : "";
+        model = m ? m.trim() : "";
+        apiKey = atob_utf8(apiKey64);
+
+        return { systemPrompt, query, apiHost, model, apiKey, mList: m_list };
+      }
+
+      function loadExistingMessages({ systemPrompt, query, mList }) {
+        if (query) {
+          const userQueryEle = document.getElementById("user-query");
+          userQueryEle.innerText = query;
+        }
+
+        // process the list of messages
+        for (const m of mList) {
+          // put the message on screen
+          messages.push(m);
+          createMessageEle(m.content, m.role);
+        }
+        scrollToBottom();
+      }
+
+      // for initial messages
+      (async () => {
+        const { systemPrompt, query, apiHost, model, apiKey, mList } =
+          await parseUrl();
+
+        if (systemPrompt && query && apiHost && model && apiKey) {
+          processUserMessage({ systemPrompt, query, apiHost, model, apiKey });
+        }
+
+        if (mList) {
+          loadExistingMessages({ systemPrompt, query, mList });
+        }
       })();
     </script>
     <script>
