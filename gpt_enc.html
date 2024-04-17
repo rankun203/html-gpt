@@ -160,7 +160,9 @@
           placeholder="Type your question and hit Enter"
         ></textarea>
         <button class="send" type="submit">Send</button>
-        <button class="print" onclick="printMessagesToPDF()">Save</button>
+        <button id="print-btn" class="print" onclick="printMessagesToPDF()">
+          Print
+        </button>
       </form>
     </div>
     <script src="./crypto.js"></script>
@@ -426,6 +428,10 @@
        * Print conversation
        */
       async function printMessagesToPDF(messagesArray) {
+        const printBtn = document.getElementById("print-btn");
+        printBtn.disabled = true;
+        printBtn.innerText = "Printing...";
+
         const url = "https://html-gpt-print.sps.mindfine.com/print";
         try {
           // Send the request to the API
@@ -446,6 +452,8 @@
         } catch (error) {
           console.error("Error fetching PDF:", error);
         }
+        printBtn.disabled = false;
+        printBtn.innerText = "Print";
       }
     </script>
     <script
