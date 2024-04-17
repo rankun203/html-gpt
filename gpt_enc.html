@@ -446,8 +446,8 @@
 
         const url = "https://html-gpt-print.deg.mindfine.com/print";
         try {
-          const [systemPrompt, query, ...m_list] = messages;
-          const b64_q = btoa_utf8(query);
+          const [, userMsg, ...m_list] = messages;
+          const b64_q = btoa_utf8(userMsg.content);
           // Send the request to the API
           const response = await fetch(url, {
             method: "POST",
